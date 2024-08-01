@@ -4,7 +4,6 @@ import qualified Data.List as List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Maybe as Maybe
-import Test.HUnit (Test (..), assertBool, runTestTT, (~:), (~?=))
 import Test.QuickCheck
 
 -- | A variable is just a character
@@ -20,22 +19,9 @@ newtype Clause = Disj {lits :: [Lit]} deriving (Eq, Ord, Show)
 
 -- | An expression in CNF (conjunctive normal form) is a conjunction
 -- of clauses. We store these clauses in the conjunction in a list.
+-- for example
+--      (A \/ B \/ C) /\ (not A) /\ (not B \/ C)
 newtype CNF = Conj {clauses :: [Clause]} deriving (Eq, Ord, Show)
-
--- A few variables for test cases
-vA, vB, vC, vD :: Var
-vA = Var 'A'
-vB = Var 'B'
-vC = Var 'C'
-vD = Var 'D'
-
-exampleFormula :: CNF
-exampleFormula =
-  Conj
-    [ Disj [Lit True vA, Lit True vB, Lit True vC],
-      Disj [Lit False vA],
-      Disj [Lit False vB, Lit True vC]
-    ]
 
 -------------------------------------------------------------------------
 
@@ -63,20 +49,19 @@ instance Enum Var where
   toEnum i = Var (toEnum (i + fromEnum 'A'))
   fromEnum (Var v) = fromEnum v - fromEnum 'A'
 
--- | A lazy long list of variables
-allVars :: [Var]
-allVars = [vA ..]
-
 -------------------------------------------------------------------------
 
 -- | The number of times each variable appears in the formula
 -- >>> countVars exampleFormula
 -- fromList [(Var 'A',2),(Var 'B',2),(Var 'C',2)]
 countVars :: CNF -> Map Var Int
-countVars = undefined
+countVars formula = foldl (Map.unionWith (+)) Map.empty $ map countVarsInClause (clauses formula)
+
+countVarsInClause :: Clause -> Map Var Int
+countVarsInClause = Map.fromList . map (\l -> (var l, 1)) . lits
 
 -- | All of the variables that appear anywhere in the formula, in sorted order
 -- >>> vars exampleFormula
 -- [Var 'A',Var 'B',Var 'C']
 vars :: CNF -> [Var]
-vars = undefined
+vars = Map.keys . countVars
