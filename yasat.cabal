@@ -6,12 +6,12 @@ cabal-version: 2.2
 
 name:           yasat
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/EYH0602/yasat#readme>
-homepage:       https://github.com/EYH0602/yasat#readme
-bug-reports:    https://github.com/EYH0602/yasat/issues
-author:         Yifeng He
-maintainer:     yfhe.prsn@gmail.com
-copyright:      2024 Yifeng He
+description:    Please see the README on GitHub at <https://github.com/githubuser/yasat#readme>
+homepage:       https://github.com/githubuser/yasat#readme
+bug-reports:    https://github.com/githubuser/yasat/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2024 Author name here
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/EYH0602/yasat
+  location: https://github.com/githubuser/yasat
 
 library
   exposed-modules:
@@ -35,7 +35,10 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , QuickCheck
+    , base >=4.7 && <5
+    , containers >=0.6
   default-language: Haskell2010
 
 executable yasat-exe
@@ -48,7 +51,10 @@ executable yasat-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , QuickCheck
+    , base >=4.7 && <5
+    , containers >=0.6
     , yasat
   default-language: Haskell2010
 
@@ -63,6 +69,9 @@ test-suite yasat-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , QuickCheck
+    , base >=4.7 && <5
+    , containers >=0.6
     , yasat
   default-language: Haskell2010
