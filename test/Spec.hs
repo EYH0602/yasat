@@ -38,5 +38,5 @@ testGenCNF =
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
-  _ <- runTestTT $ TestList [testCountVars, testVars]
+  _ <- runTestTT $ TestList [testCountVars, testVars, testGenVars, testGenCNF]
   putStrLn "Run Finished"

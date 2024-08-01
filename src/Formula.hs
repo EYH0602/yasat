@@ -1,5 +1,6 @@
 module Formula where
 
+import Control.Monad (liftM2, liftM3)
 import Sat
 import Test.QuickCheck
 
@@ -25,19 +26,28 @@ allVars = [vA ..]
 -- | Generate a random variable (limited to the first `n` variables).
 genVar :: Int -> Gen Var
 genVar n | n < 1 = error "Must supply a positive number to genVar"
-genVar n = undefined
+genVar n = do
+  idx <- choose (0, n - 1)
+  return $ allVars !! idx
 
 -- | Generate a random literal with `n` distinct variables.
 genLit :: Int -> Gen Lit
-genLit n = undefined
+genLit n = do
+  p <- choose (True, False)
+  v <- genVar n
+  return $ Lit p v
 
 -- | Generate a random Clause with `n` distinct variables.
 genClause :: Int -> Gen Clause
-genClause n = undefined
+genClause n = do
+  ls <- listOf $ genLit n
+  return $ Disj ls
 
 -- | Generate a random CNF with `n` distinct variables.
 genCNF :: Int -> Gen CNF
-genCNF n = undefined
+genCNF n = do
+  cs <- listOf $ genClause n
+  return $ Conj cs
 
 defaultNumVariables :: Int
 defaultNumVariables = 7
