@@ -1,26 +1,10 @@
+import qualified Data.List as List
 import qualified Data.Map as Map
+import Formula
 import Lib ()
-import Sat (CNF (..), Clause (..), Lit (..), Var (..), countVars, vars)
+import Sat
 import Test.HUnit (Counts, Test (..), assertBool, runTestTT, (~:), (~?=))
-
--- A few variables for test cases
-vA, vB, vC, vD :: Var
-vA = Var 'A'
-vB = Var 'B'
-vC = Var 'C'
-vD = Var 'D'
-
-exampleFormula :: CNF
-exampleFormula =
-  Conj
-    [ Disj [Lit True vA, Lit True vB, Lit True vC],
-      Disj [Lit False vA],
-      Disj [Lit False vB, Lit True vC]
-    ]
-
--- | A lazy long list of variables
-allVars :: [Var]
-allVars = [vA ..]
+import Test.QuickCheck
 
 testCountVars :: Test
 testCountVars =
@@ -35,6 +19,21 @@ testVars =
     ~?= [vA, vB, vC]
 
 -------------------------------------------------------------------------
+
+-- | Test cases for Formula generators
+-- make sure that genVars produces the right number of variables.
+testGenVars :: Test
+testGenVars =
+  "genVar" ~: do
+    xs <- sample' (genVar 3)
+    return $ length (List.nub xs) == 3
+
+-- make sure that arbitrary formulae don't contain too many variables.
+testGenCNF :: Test
+testGenCNF =
+  "genCNF" ~: do
+    xs <- sample' (genCNF defaultNumVariables)
+    return $ all (\c -> length (countVars c) <= defaultNumVariables) xs
 
 main :: IO ()
 main = do

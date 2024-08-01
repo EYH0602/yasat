@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Formula
       Lib
       Sat
   other-modules:
