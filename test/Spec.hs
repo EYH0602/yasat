@@ -5,6 +5,7 @@ import Lib ()
 import Sat
 import Test.HUnit (Counts, Test (..), assertBool, runTestTT, (~:), (~?=))
 import Test.QuickCheck
+import Valuation
 
 testCountVars :: Test
 testCountVars =
@@ -35,8 +36,26 @@ testGenCNF =
     xs <- sample' (genCNF defaultNumVariables)
     return $ all (\c -> length (countVars c) <= defaultNumVariables) xs
 
+testSatisfiedBy :: Test
+testSatisfiedBy =
+  "satisfiedBy"
+    ~: TestList
+      [ "exampleFormula"
+          ~: assertBool "" (exampleFormula `satisfiedBy` exampleValuation),
+        "should filed valuation"
+          ~: assertBool "" (not (exampleFormula `satisfiedBy` valuation')),
+        "empty bur valid"
+          ~: assertBool "" (validEmptyFormula `satisfiedBy` exampleValuation),
+        "disjunction"
+          ~: assertBool "" (not (anotherUnsatFormula `satisfiedBy` exampleValuation))
+      ]
+  where
+    valuation' = Map.fromList [(vA, False), (vB, False), (vC, False)]
+    validEmptyFormula = Conj []
+    anotherUnsatFormula = Conj [Disj []]
+
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
-  _ <- runTestTT $ TestList [testCountVars, testVars, testGenVars, testGenCNF]
+  _ <- runTestTT $ TestList [testCountVars, testVars, testGenVars, testGenCNF, testSatisfiedBy]
   putStrLn "Run Finished"
