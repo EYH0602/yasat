@@ -26,9 +26,7 @@ allVars = [vA ..]
 -- | Generate a random variable (limited to the first `n` variables).
 genVar :: Int -> Gen Var
 genVar n | n < 1 = error "Must supply a positive number to genVar"
-genVar n = do
-  idx <- choose (0, n - 1)
-  return $ allVars !! idx
+genVar n = elements $ take n allVars
 
 -- | Generate a random literal with `n` distinct variables.
 genLit :: Int -> Gen Lit
