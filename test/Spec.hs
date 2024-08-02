@@ -54,8 +54,21 @@ testSatisfiedBy =
     validEmptyFormula = Conj []
     anotherUnsatFormula = Conj [Disj []]
 
+--  A /\ (not A), shot not be satisfied by any valuation
+unSatFormula :: CNF
+unSatFormula = Conj [Disj [Lit True vA], Disj [Lit False vA]]
+
+prop_unSatBy :: Valuation -> Property
+prop_unSatBy v = property (not (unSatFormula `satisfiedBy` v))
+
+--------------------------------------------------------------------------
+quickCheckN :: (Testable prop) => Int -> prop -> IO ()
+quickCheckN n = quickCheckWith $ stdArgs {maxSuccess = n}
+
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
   _ <- runTestTT $ TestList [testCountVars, testVars, testGenVars, testGenCNF, testSatisfiedBy]
-  putStrLn "Run Finished"
+  putStrLn "QuickCheck properties:"
+  putStrLn "prop_unSatBy"
+  quickCheckN 500 prop_unSatBy
