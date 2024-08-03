@@ -3,6 +3,7 @@ import qualified Data.Map as Map
 import Formula
 import Lib ()
 import Sat
+import Solver
 import Test.HUnit (Counts, Test (..), assertBool, runTestTT, (~:), (~?=))
 import Test.QuickCheck
 import Valuation
@@ -65,6 +66,23 @@ prop_unSatBy v = property (not (unSatFormula `satisfiedBy` v))
 quickCheckN :: (Testable prop) => Int -> prop -> IO ()
 quickCheckN n = quickCheckWith $ stdArgs {maxSuccess = n}
 
+--------------------------------------------------------------------------
+------- Tests for Solver -----
+
+allElementsDistinct :: (Eq a) => [a] -> Bool
+allElementsDistinct [] = True
+allElementsDistinct (x : xs) =
+  x `notElem` xs
+    && allElementsDistinct xs
+
+prop_makeValuations :: CNF -> Property
+prop_makeValuations p =
+  length valuations === 2 ^ length ss
+    .&&. allElementsDistinct valuations
+  where
+    valuations = makeValuations ss :: [Valuation]
+    ss = vars p
+
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
@@ -72,3 +90,5 @@ main = do
   putStrLn "QuickCheck properties:"
   putStrLn "prop_unSatBy"
   quickCheckN 500 prop_unSatBy
+  putStrLn "prop_makeValuations"
+  quickCheckN 500 prop_makeValuations

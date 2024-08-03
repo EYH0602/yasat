@@ -28,6 +28,7 @@ library
       Formula
       Lib
       Sat
+      Solver
       Valuation
   other-modules:
       Paths_yasat
