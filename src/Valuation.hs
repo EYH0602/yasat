@@ -25,3 +25,9 @@ litSatisfied a lit = a Map.!? var lit == Just (polarity lit)
 
 satisfiedBy :: CNF -> Valuation -> Bool
 satisfiedBy p a = all (any (litSatisfied a) . lits) (clauses p)
+
+extend :: Var -> Bool -> Valuation -> Valuation
+extend = Map.insert
+
+value :: Var -> Valuation -> Maybe Bool
+value = Map.lookup
