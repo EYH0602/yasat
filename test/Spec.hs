@@ -2,6 +2,7 @@
 
 import qualified Data.List as List
 import qualified Data.Map as Map
+import Data.Maybe (isJust)
 import Formula
 import Lib ()
 import Sat
@@ -100,6 +101,11 @@ prop_satResultCorrect solver p = property $ case solver p of
   Just a -> p `satisfiedBy` a
   Nothing -> unsatisfiable p
 
+prop_instantiate :: CNF -> Var -> Bool
+prop_instantiate s v = isJust (sat0 s) == (isJust (sat0 (instantiate s v True)) || isJust (sat0 (instantiate s v False)))
+
+exampleFormula' = Conj {clauses = [Disj {lits = [Lit {polarity = False, var = Var 'A'}]}, Disj {lits = []}]}
+
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
@@ -113,3 +119,5 @@ main = do
   quickCheckN 500 (prop_satResultSound sat0)
   putStrLn "prop_satResultCorrect"
   quickCheckN 500 (prop_satResultCorrect sat0)
+  putStrLn "prop_instantiate"
+  quickCheckN 500 prop_instantiate
