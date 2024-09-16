@@ -111,5 +111,5 @@ main = do
   quickCheckN 500 prop_makeValuations
   putStrLn "prop_satResultSound"
   quickCheckN 500 (prop_satResultSound sat0)
-  -- prop_satResultSound sat0
   putStrLn "prop_satResultCorrect"
+  quickCheckN 500 (prop_satResultCorrect sat0)
