@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deferred-out-of-scope-variables #-}
+
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Formula
@@ -83,6 +85,21 @@ prop_makeValuations p =
     valuations = makeValuations ss :: [Valuation]
     ss = vars p
 
+prop_satResultSound :: Solver -> CNF -> Property
+prop_satResultSound solver p = case solver p of
+  Just a -> collect "sat" $ p `satisfiedBy` a
+  Nothing -> collect "unsat" $ property True
+
+-- a formula is unsatisfiable when there is no satisfying valuation
+-- out of all of the possible assignments of variables to truth values.
+unsatisfiable :: CNF -> Bool
+unsatisfiable p = not . any (p `satisfiedBy`) $ makeValuations (vars p)
+
+prop_satResultCorrect :: Solver -> CNF -> Property
+prop_satResultCorrect solver p = property $ case solver p of
+  Just a -> p `satisfiedBy` a
+  Nothing -> unsatisfiable p
+
 main :: IO ()
 main = do
   putStrLn "Unit tests:"
@@ -92,3 +109,7 @@ main = do
   quickCheckN 500 prop_unSatBy
   putStrLn "prop_makeValuations"
   quickCheckN 500 prop_makeValuations
+  putStrLn "prop_satResultSound"
+  quickCheckN 500 (prop_satResultSound sat0)
+  -- prop_satResultSound sat0
+  putStrLn "prop_satResultCorrect"
